@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:task/core/localization/app_localizations.dart';
@@ -14,6 +15,7 @@ class OfflineIndicator extends StatefulWidget {
 class _OfflineIndicatorState extends State<OfflineIndicator> {
   bool _isVisible = false;
   bool _isExpanded = false;
+  bool _hasInternetConnection = true;
   Timer? _hideTimer;
   Timer? _expandTimer;
   Timer? _checkTimer;
@@ -21,12 +23,27 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
   @override
   void initState() {
     super.initState();
-    _checkAndShowIndicator();
+
+    // Initialize connectivity check
+    _initializeConnectivity();
 
     // Check every 5 minutes for cache status changes
     _checkTimer = Timer.periodic(const Duration(minutes: 5), (timer) {
       _checkAndShowIndicator();
     });
+
+    // Check internet connection every 30 seconds
+    Timer.periodic(const Duration(seconds: 30), (timer) {
+      if (mounted) {
+        _checkInternetConnection();
+      }
+    });
+  }
+
+  /// Initialize connectivity with internet test
+  Future<void> _initializeConnectivity() async {
+    await _checkInternetConnection();
+    _checkAndShowIndicator();
   }
 
   @override
@@ -41,29 +58,37 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
     final isCacheValid = CacheManager.isCacheValid();
     final cacheAge = CacheManager.getCacheAge();
 
-    // Only show if cache is expired or very old (more than 30 minutes)
-    // and we haven't already shown it recently
-    if (!isCacheValid || (cacheAge != null && cacheAge.inMinutes > 30)) {
+    // Show indicator if:
+    // 1. No internet connection, OR
+    // 2. Cache is expired or very old (more than 30 minutes)
+    final shouldShow =
+        !_hasInternetConnection ||
+        !isCacheValid ||
+        (cacheAge != null && cacheAge.inMinutes > 30);
+
+    if (shouldShow) {
       if (!_isVisible) {
         setState(() {
           _isVisible = true;
           _isExpanded = false;
         });
 
-        // Auto-hide after 3 minutes
-        _hideTimer?.cancel();
-        _hideTimer = Timer(const Duration(minutes: 3), () {
-          if (mounted) {
-            setState(() {
-              _isVisible = false;
-              _isExpanded = false;
-            });
-          }
-        });
+        // Auto-hide after 3 minutes only if internet is back
+        if (_hasInternetConnection) {
+          _hideTimer?.cancel();
+          _hideTimer = Timer(const Duration(minutes: 3), () {
+            if (mounted) {
+              setState(() {
+                _isVisible = false;
+                _isExpanded = false;
+              });
+            }
+          });
+        }
 
-        // Auto-expand after 10 seconds to show more details
+        // Auto-expand after 8 seconds to show more details
         _expandTimer?.cancel();
-        _expandTimer = Timer(const Duration(seconds: 10), () {
+        _expandTimer = Timer(const Duration(seconds: 8), () {
           if (mounted && _isVisible) {
             setState(() {
               _isExpanded = true;
@@ -72,7 +97,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
         });
       }
     } else {
-      // If cache is valid and not too old, hide the indicator
+      // If cache is valid, internet is available, and not too old, hide the indicator
       if (_isVisible) {
         setState(() {
           _isVisible = false;
@@ -97,6 +122,33 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
     _checkAndShowIndicator();
   }
 
+  /// Check internet connection using HTTP request
+  Future<void> _checkInternetConnection() async {
+    try {
+      final hasInternet = await _testInternetConnection();
+
+      if (mounted && hasInternet != _hasInternetConnection) {
+        setState(() {
+          _hasInternetConnection = hasInternet;
+        });
+        _checkAndShowIndicator();
+      }
+      // ignore: empty_catches
+    } catch (e) {}
+  }
+
+  /// Test actual internet connectivity by making a simple HTTP request
+  Future<bool> _testInternetConnection() async {
+    try {
+      // Try to connect to a reliable service
+      final result = await InternetAddress.lookup('google.com');
+      final hasInternet = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+      return hasInternet;
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_isVisible) {
@@ -108,77 +160,129 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      height: _isExpanded ? 80 : 50,
       child: Container(
         margin: const EdgeInsets.all(8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isCacheValid
-              ? Colors.orange.withValues(alpha: 0.1)
-              : Colors.red.withValues(alpha: 0.1),
+          color: !_hasInternetConnection
+              ? Colors.red.withValues(alpha: 0.1)
+              : (isCacheValid
+                    ? Colors.orange.withValues(alpha: 0.1)
+                    : Colors.red.withValues(alpha: 0.1)),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isCacheValid ? Colors.orange : Colors.red),
+          border: Border.all(
+            color: !_hasInternetConnection
+                ? Colors.red
+                : (isCacheValid ? Colors.orange : Colors.red),
+          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  isCacheValid ? Icons.warning_amber : Icons.cloud_off,
-                  color: isCacheValid ? Colors.orange : Colors.red,
+                  !_hasInternetConnection
+                      ? Icons.wifi_off
+                      : (isCacheValid ? Icons.warning_amber : Icons.cloud_off),
+                  color: !_hasInternetConnection
+                      ? Colors.red
+                      : (isCacheValid ? Colors.orange : Colors.red),
                   size: 20,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    isCacheValid
-                        ? AppLocalizations.of(context)?.offlineDataExpired ??
-                              'Offline Data Expired'
-                        : AppLocalizations.of(context)?.offlineDataAvailable ??
-                              'Offline Data Available',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: isCacheValid ? Colors.orange : Colors.red,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          !_hasInternetConnection
+                              ? AppLocalizations.of(
+                                      context,
+                                    )?.noInternetConnection ??
+                                    'No Internet Connection'
+                              : isCacheValid
+                              ? AppLocalizations.of(
+                                      context,
+                                    )?.offlineDataExpired ??
+                                    'Offline Data Expired'
+                              : AppLocalizations.of(
+                                      context,
+                                    )?.offlineDataAvailable ??
+                                    'Offline Data Available',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: !_hasInternetConnection
+                                ? Colors.red
+                                : (isCacheValid ? Colors.orange : Colors.red),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                      ),
+                      if (cacheAge != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          '${cacheAge.inMinutes}m ${AppLocalizations.of(context)?.ago ?? 'ago'}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: _refreshIndicator,
+                      icon: const Icon(Icons.refresh, size: 18),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 24,
+                        minHeight: 24,
+                      ),
+                      tooltip: 'Refresh status',
                     ),
-                  ),
-                ),
-                if (cacheAge != null)
-                  Text(
-                    '${cacheAge.inMinutes}m ${AppLocalizations.of(context)?.ago ?? 'ago'}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                  ),
-                IconButton(
-                  onPressed: _refreshIndicator,
-                  icon: const Icon(Icons.refresh, size: 18),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 24,
-                    minHeight: 24,
-                  ),
-                  tooltip: 'Refresh status',
-                ),
-                IconButton(
-                  onPressed: _dismissIndicator,
-                  icon: const Icon(Icons.close, size: 18),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 24,
-                    minHeight: 24,
-                  ),
-                  tooltip: 'Dismiss',
+                    IconButton(
+                      onPressed: _dismissIndicator,
+                      icon: const Icon(Icons.close, size: 18),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 24,
+                        minHeight: 24,
+                      ),
+                      tooltip: 'Dismiss',
+                    ),
+                  ],
                 ),
               ],
             ),
             if (_isExpanded) ...[
               const SizedBox(height: 8),
-              Text(
-                AppLocalizations.of(context)?.pullToRefreshToGetLatestData ??
-                    'Pull to refresh to get latest data',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                  fontStyle: FontStyle.italic,
+              Flexible(
+                child: Text(
+                  !_hasInternetConnection
+                      ? AppLocalizations.of(context)?.checkInternetConnection ??
+                            'Check your internet connection'
+                      : AppLocalizations.of(
+                              context,
+                            )?.pullToRefreshToGetLatestData ??
+                            'Pull to refresh to get latest data',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontStyle: FontStyle.italic,
+                  ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
               ),
             ],

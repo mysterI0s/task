@@ -245,6 +245,8 @@ class AppLocalizations {
       locale.languageCode == 'ar' ? 'منتهي الصلاحية' : 'Expired';
   String get offline => locale.languageCode == 'ar' ? 'بدون إنترنت' : 'Offline';
   String get ago => locale.languageCode == 'ar' ? 'منذ' : 'ago';
+  String get noInternetConnection => locale.languageCode == 'ar' ? 'لا يوجد اتصال بالإنترنت' : 'No Internet Connection';
+  String get checkInternetConnection => locale.languageCode == 'ar' ? 'تحقق من اتصال الإنترنت' : 'Check your internet connection';
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
