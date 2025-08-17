@@ -1,0 +1,33 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        enabled: true
+        options:
+          # Generate copyWith and toString methods
+          copyWith: true
+          # Generate equality (== and hashCode)
+          equal: true
+          # Generate toString method
+          to_string: true
+          # Generate when and map methods for unions
+          when: true
+          map: true
+      
+      json_serializable:
+        enabled: true
+        options:
+          # Create factory constructors for JSON deserialization
+          create_factory: true
+          # Create toJson methods
+          create_to_json: true
+          # Use explicit types
+          explicit_to_json: true
+          # Include fields that are private
+          include_if_null: false
+          
+      retrofit_generator:
+        enabled: true
+        options:
+          # Generate null safety code
+          null_safety: true
