@@ -1,4 +1,4 @@
-# Data Explorer - Flutter Task Management App
+# Data Explorer
 
 A modern, feature-rich Flutter application built with clean architecture principles, featuring product and recipe management with advanced filtering, search, and pagination capabilities.
 
