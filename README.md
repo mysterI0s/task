@@ -133,23 +133,6 @@ The app includes the following main screens:
    flutter run
    ```
 
-### Development Setup
-
-1. **Enable code generation watch mode** (optional, for development)
-   ```bash
-   flutter packages pub run build_runner watch --delete-conflicting-outputs
-   ```
-
-2. **Run tests**
-   ```bash
-   flutter test
-   ```
-
-3. **Analyze code**
-   ```bash
-   flutter analyze
-   ```
-
 ## 🔧 Configuration
 
 ### Environment Variables
