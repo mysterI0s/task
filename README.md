@@ -125,7 +125,7 @@ The app includes the following main screens:
 
 3. **Generate code** (required for first run)
    ```bash
-   flutter packages pub run build_runner build --delete-conflicting-outputs
+   dart run build_runner build --delete-conflicting-outputs
    ```
 
 4. **Run the app**
