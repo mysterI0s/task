@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:task/core/localization/app_localizations.dart';
 import 'package:task/core/widgets/error_widget.dart';
 import 'package:task/core/widgets/loading_widget.dart';
 import 'package:task/features/products/application/providers/product_provider.dart';
@@ -52,7 +53,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Products'),
+        title: Text(AppLocalizations.of(context)?.products ?? 'Products'),
         elevation: 0,
         actions: [
           IconButton(
@@ -115,8 +116,8 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
     }
 
     if (state.products.isEmpty) {
-      return const AppEmptyWidget(
-        message: 'No products found',
+      return AppEmptyWidget(
+        message: AppLocalizations.of(context)?.noData ?? 'No products found',
         icon: Icons.inventory_2_outlined,
       );
     }
@@ -164,7 +165,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Center(
                   child: Text(
-                    'No more products to load',
+                    AppLocalizations.of(context)?.loadMore ?? 'No more products to load',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),

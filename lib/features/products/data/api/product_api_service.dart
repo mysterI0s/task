@@ -28,6 +28,8 @@ abstract class ProductApiService {
     @Query('q') required String query,
     @Query('limit') int limit = 20,
     @Query('skip') int skip = 0,
+    @Query('sortBy') String? sortBy,
+    @Query('order') String? order,
   });
 
   @GET('/products/category/{category}')
@@ -35,5 +37,7 @@ abstract class ProductApiService {
     @Path('category') required String category,
     @Query('limit') int limit = 20,
     @Query('skip') int skip = 0,
+    @Query('sortBy') String? sortBy,
+    @Query('order') String? order,
   });
 }

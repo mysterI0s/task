@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:task/core/localization/app_localizations.dart';
 import 'package:task/features/recipes/presentation/recipes_screen.dart';
 import 'package:task/features/recipes/presentation/settings_screen.dart';
 
@@ -88,7 +89,7 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(
               _currentIndex == 0 ? Icons.home_rounded : Icons.home_outlined,
             ),
-            label: 'Products',
+            label: AppLocalizations.of(context)?.products ?? 'Products',
           ),
           BottomNavigationBarItem(
             icon: Icon(
@@ -96,7 +97,7 @@ class _MainScreenState extends State<MainScreen> {
                   ? Icons.restaurant_rounded
                   : Icons.restaurant_outlined,
             ),
-            label: 'Recipes',
+            label: AppLocalizations.of(context)?.recipes ?? 'Recipes',
           ),
           BottomNavigationBarItem(
             icon: Icon(
@@ -104,7 +105,7 @@ class _MainScreenState extends State<MainScreen> {
                   ? Icons.settings_rounded
                   : Icons.settings_outlined,
             ),
-            label: 'Settings',
+            label: AppLocalizations.of(context)?.settings ?? 'Settings',
           ),
         ],
       ),

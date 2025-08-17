@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task/core/localization/app_localizations.dart';
 
 class AppErrorWidget extends StatelessWidget {
   const AppErrorWidget({
@@ -34,7 +35,7 @@ class AppErrorWidget extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'Something went wrong',
+            AppLocalizations.of(context)?.error ?? 'Something went wrong',
             style: Theme.of(
               context,
             ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
@@ -53,7 +54,9 @@ class AppErrorWidget extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try Again'),
+              label: Text(
+                AppLocalizations.of(context)?.tryAgain ?? 'Try Again',
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -100,7 +103,7 @@ class AppEmptyWidget extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'Nothing here yet',
+            AppLocalizations.of(context)?.noData ?? 'Nothing here yet',
             style: Theme.of(
               context,
             ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),

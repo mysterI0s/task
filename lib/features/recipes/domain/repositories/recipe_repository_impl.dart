@@ -24,6 +24,9 @@ class RecipeRepositoryImpl implements RecipeRepository {
     } on DioException catch (e) {
       return Left(_handleDioError(e));
     } catch (e) {
+      if (e is DioException && e.type == DioExceptionType.connectionTimeout) {
+        return const Left(NetworkFailure('Connection timeout'));
+      }
       return Left(UnknownFailure(e.toString()));
     }
   }

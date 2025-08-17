@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task/core/localization/app_localizations.dart';
 
 class ProductSearchBar extends StatefulWidget {
   const ProductSearchBar({
@@ -70,7 +71,8 @@ class _ProductSearchBarState extends State<ProductSearchBar> {
       onSubmitted: (_) => _performSearch(),
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        hintText: 'Search products...',
+        hintText:
+            '${AppLocalizations.of(context)?.search ?? 'Search'} ${AppLocalizations.of(context)?.products.toLowerCase() ?? 'products'}...',
         border: InputBorder.none,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,

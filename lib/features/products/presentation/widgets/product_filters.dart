@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:task/core/localization/app_localizations.dart';
 
 import '../../application/providers/product_provider.dart';
 
@@ -33,6 +34,29 @@ class _ProductFiltersState extends ConsumerState<ProductFilters> {
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoriesProvider);
+    final productsState = ref.watch(productsProvider);
+
+    // Sync local state with provider state (only when they differ)
+    if (productsState.sortBy != null &&
+        productsState.sortOrder != null &&
+        (selectedSortBy != productsState.sortBy ||
+            selectedOrder != productsState.sortOrder)) {
+      // Use Future.microtask to avoid calling setState during build
+      Future.microtask(() {
+        if (mounted) {
+          setState(() {
+            selectedSortBy = productsState.sortBy!;
+            selectedOrder = productsState.sortOrder!;
+          });
+        }
+      });
+    }
+
+    // Ensure selectedSortBy is always valid
+    final validSortBy =
+        sortOptions.any((option) => option['key'] == selectedSortBy)
+        ? selectedSortBy
+        : sortOptions.first['key']!;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -52,7 +76,7 @@ class _ProductFiltersState extends ConsumerState<ProductFilters> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Filters',
+                AppLocalizations.of(context)?.filter ?? 'Filters',
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -61,12 +85,15 @@ class _ProductFiltersState extends ConsumerState<ProductFilters> {
                 onPressed: () {
                   setState(() {
                     selectedCategory = null;
-                    selectedSortBy = 'title';
-                    selectedOrder = 'asc';
+                    // Keep current sorting, just clear category
+                    // selectedSortBy and selectedOrder remain unchanged
                   });
+                  // Just call onClearFilters, which should preserve sorting
                   widget.onClearFilters();
                 },
-                child: const Text('Clear All'),
+                child: Text(
+                  AppLocalizations.of(context)?.clearAll ?? 'Clear All',
+                ),
               ),
             ],
           ),
@@ -75,7 +102,7 @@ class _ProductFiltersState extends ConsumerState<ProductFilters> {
 
           // Categories
           Text(
-            'Categories',
+            AppLocalizations.of(context)?.category ?? 'Categories',
             style: Theme.of(
               context,
             ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
@@ -89,7 +116,7 @@ class _ProductFiltersState extends ConsumerState<ProductFilters> {
               children: [
                 // All Categories chip
                 FilterChip(
-                  label: const Text('All'),
+                  label: Text(AppLocalizations.of(context)?.home ?? 'All'),
                   selected: selectedCategory == null,
                   onSelected: (selected) {
                     setState(() {
@@ -132,7 +159,7 @@ class _ProductFiltersState extends ConsumerState<ProductFilters> {
 
           // Sort Options
           Text(
-            'Sort By',
+            AppLocalizations.of(context)?.sortBy ?? 'Sort By',
             style: Theme.of(
               context,
             ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
@@ -145,7 +172,7 @@ class _ProductFiltersState extends ConsumerState<ProductFilters> {
               Expanded(
                 flex: 2,
                 child: DropdownButtonFormField<String>(
-                  value: selectedSortBy,
+                  value: validSortBy,
                   decoration: const InputDecoration(
                     isDense: true,
                     contentPadding: EdgeInsets.symmetric(
@@ -157,7 +184,12 @@ class _ProductFiltersState extends ConsumerState<ProductFilters> {
                       .map(
                         (option) => DropdownMenuItem<String>(
                           value: option['key'],
-                          child: Text(option['label']!),
+                          child: Text(
+                            _getLocalizedSortOptionLabel(
+                              context,
+                              option['key']!,
+                            ),
+                          ),
                         ),
                       )
                       .toList(),
@@ -185,9 +217,15 @@ class _ProductFiltersState extends ConsumerState<ProductFilters> {
                       vertical: 8,
                     ),
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'asc', child: Text('A-Z')),
-                    DropdownMenuItem(value: 'desc', child: Text('Z-A')),
+                  items: [
+                    DropdownMenuItem(
+                      value: 'asc',
+                      child: Text(_getSortOrderLabel(selectedSortBy, 'asc')),
+                    ),
+                    DropdownMenuItem(
+                      value: 'desc',
+                      child: Text(_getSortOrderLabel(selectedSortBy, 'desc')),
+                    ),
                   ],
                   onChanged: (value) {
                     if (value != null) {
@@ -210,4 +248,30 @@ class _ProductFiltersState extends ConsumerState<ProductFilters> {
       .split('-')
       .map((word) => word[0].toUpperCase() + word.substring(1))
       .join(' ');
+
+  String _getSortOrderLabel(String sortBy, String order) {
+    if (sortBy == 'title') {
+      return order == 'asc' ? 'A-Z' : 'Z-A';
+    } else if (sortBy == 'price') {
+      return order == 'asc' ? '↑' : '↓';
+    } else if (sortBy == 'rating') {
+      return order == 'asc' ? '↑' : '↓';
+    }
+    return order == 'asc' ? 'A-Z' : 'Z-A';
+  }
+
+  String _getLocalizedSortOptionLabel(BuildContext context, String key) {
+    switch (key) {
+      case 'title':
+        return AppLocalizations.of(context)?.description ?? 'Name';
+      case 'price':
+        return AppLocalizations.of(context)?.price ?? 'Price';
+      case 'rating':
+        return AppLocalizations.of(context)?.rating ?? 'Rating';
+      case 'category':
+        return AppLocalizations.of(context)?.category ?? 'Category';
+      default:
+        return 'Name';
+    }
+  }
 }

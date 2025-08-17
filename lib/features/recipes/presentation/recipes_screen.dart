@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:task/core/localization/app_localizations.dart';
 import 'package:task/core/widgets/error_widget.dart';
 import 'package:task/core/widgets/loading_widget.dart';
 import 'package:task/features/recipes/application/providers/recipe_provider.dart';
@@ -49,7 +50,10 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
     final recipesState = ref.watch(recipesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Recipes'), elevation: 0),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)?.recipes ?? 'Recipes'),
+        elevation: 0,
+      ),
       body: Column(
         children: [
           // Search Bar
@@ -71,7 +75,10 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
 
   Widget _buildRecipesList(RecipesState state) {
     if (state.isLoading && state.recipes.isEmpty) {
-      return const LoadingWidget(message: 'Loading recipes...');
+      return LoadingWidget(
+        message:
+            '${AppLocalizations.of(context)?.loading ?? 'Loading'} ${AppLocalizations.of(context)?.recipes.toLowerCase() ?? 'recipes'}...',
+      );
     }
 
     if (state.error != null && state.recipes.isEmpty) {
@@ -84,8 +91,8 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
     }
 
     if (state.recipes.isEmpty) {
-      return const AppEmptyWidget(
-        message: 'No recipes found',
+      return AppEmptyWidget(
+        message: AppLocalizations.of(context)?.noData ?? 'No recipes found',
         icon: Icons.restaurant_outlined,
       );
     }
@@ -133,7 +140,8 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Center(
                   child: Text(
-                    'No more recipes to load',
+                    AppLocalizations.of(context)?.loadMore ??
+                        'No more recipes to load',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),

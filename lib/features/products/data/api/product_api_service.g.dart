@@ -117,13 +117,18 @@ class _ProductApiService implements ProductApiService {
     required String query,
     int limit = 20,
     int skip = 0,
+    String? sortBy,
+    String? order,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'q': query,
       r'limit': limit,
       r'skip': skip,
+      r'sortBy': sortBy,
+      r'order': order,
     };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final Map<String, dynamic>? _data = null;
     final _result = await _dio
@@ -152,12 +157,17 @@ class _ProductApiService implements ProductApiService {
     required String category,
     int limit = 20,
     int skip = 0,
+    String? sortBy,
+    String? order,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'limit': limit,
       r'skip': skip,
+      r'sortBy': sortBy,
+      r'order': order,
     };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final Map<String, dynamic>? _data = null;
     final _result = await _dio

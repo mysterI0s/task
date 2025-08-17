@@ -18,6 +18,21 @@ final dioProvider = Provider<Dio>((ref) {
 
   if (AppConfig.isDebug) {
     dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
+
+    // Add custom interceptor to log request details
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          handler.next(options);
+        },
+        onResponse: (response, handler) {
+          handler.next(response);
+        },
+        onError: (error, handler) {
+          handler.next(error);
+        },
+      ),
+    );
   }
 
   return dio;
@@ -94,7 +109,8 @@ final productsProvider = StateNotifierProvider<ProductsNotifier, ProductsState>(
 );
 
 class ProductsNotifier extends StateNotifier<ProductsState> {
-  ProductsNotifier(this._repository) : super(const ProductsState()) {
+  ProductsNotifier(this._repository)
+    : super(const ProductsState(sortBy: 'title', sortOrder: 'asc')) {
     loadProducts();
   }
   final ProductRepository _repository;
@@ -113,6 +129,8 @@ class ProductsNotifier extends StateNotifier<ProductsState> {
       state = state.copyWith(isLoading: true);
     }
 
+    // Debug logging for API call parameters
+
     final result = await _repository.getProducts(
       skip: state.currentPage * AppConfig.defaultPageSize,
       search: state.searchQuery,
@@ -124,14 +142,19 @@ class ProductsNotifier extends StateNotifier<ProductsState> {
     result.fold(
       (failure) =>
           state = state.copyWith(isLoading: false, error: failure.message),
-      (response) => state = state.copyWith(
-        isLoading: false,
-        products: refresh
-            ? response.products
-            : [...state.products, ...response.products],
-        hasMore: response.products.length == AppConfig.defaultPageSize,
-        currentPage: refresh ? 1 : state.currentPage + 1,
-      ),
+      (response) {
+        // Debug logging for response
+        if (response.products.isNotEmpty) {}
+
+        state = state.copyWith(
+          isLoading: false,
+          products: refresh
+              ? response.products
+              : [...state.products, ...response.products],
+          hasMore: response.products.length == AppConfig.defaultPageSize,
+          currentPage: refresh ? 1 : state.currentPage + 1,
+        );
+      },
     );
   }
 
@@ -183,6 +206,8 @@ class ProductsNotifier extends StateNotifier<ProductsState> {
   }
 
   Future<void> sortProducts(String sortBy, String order) async {
+    // Debug logging for sorting
+
     state = state.copyWith(
       sortBy: sortBy,
       sortOrder: order,
@@ -190,11 +215,17 @@ class ProductsNotifier extends StateNotifier<ProductsState> {
       products: [],
       hasMore: true,
     );
+
     await loadProducts(refresh: true);
   }
 
   void clearFilters() {
-    state = state.copyWith(currentPage: 0, products: [], hasMore: true);
+    state = state.copyWith(
+      currentPage: 0,
+      products: [],
+      hasMore: true,
+      // Keep current sorting parameters
+    );
     loadProducts(refresh: true);
   }
 }
@@ -212,11 +243,36 @@ final productProvider = FutureProvider.family<Product, int>((ref, id) async {
 
 // Categories provider
 final categoriesProvider = FutureProvider<List<String>>((ref) async {
-  final repository = ref.read(productRepositoryProvider);
-  final result = await repository.getCategories();
+  try {
+    // Get products first to extract categories from them
+    final productsState = ref.read(productsProvider);
 
-  return result.fold(
-    (failure) => throw Exception(failure.message),
-    (categories) => categories,
-  );
+    // If we already have products, extract categories from them
+    if (productsState.products.isNotEmpty) {
+      final categoriesSet = <String>{};
+      for (final product in productsState.products) {
+        if (product.category.isNotEmpty) {
+          categoriesSet.add(product.category);
+        }
+      }
+      return categoriesSet.toList()..sort();
+    }
+
+    // If no products yet, load them first
+    final productsNotifier = ref.read(productsProvider.notifier);
+    await productsNotifier.loadProducts(refresh: true);
+
+    // Now extract categories from the loaded products
+    final currentState = ref.read(productsProvider);
+    final categoriesSet = <String>{};
+    for (final product in currentState.products) {
+      if (product.category.isNotEmpty) {
+        categoriesSet.add(product.category);
+      }
+    }
+
+    return categoriesSet.toList()..sort();
+  } catch (e) {
+    throw Exception('Failed to load categories: $e');
+  }
 });

@@ -22,6 +22,33 @@ class ProductRepositoryImpl implements ProductRepository {
     String? order,
   }) async {
     try {
+      // Debug logging
+
+      // If search query is specified, use the search endpoint (which doesn't support sorting)
+      if (search != null && search.isNotEmpty) {
+        final response = await _apiService.searchProducts(
+          query: search,
+          limit: limit,
+          skip: skip,
+          sortBy: sortBy,
+          order: order,
+        );
+        return Right(response);
+      }
+
+      // If category is specified, use the category-specific endpoint
+      if (category != null && category.isNotEmpty) {
+        final response = await _apiService.getProductsByCategory(
+          category: category,
+          limit: limit,
+          skip: skip,
+          sortBy: sortBy,
+          order: order,
+        );
+        return Right(response);
+      }
+
+      // Otherwise, use the general products endpoint
       final response = await _apiService.getProducts(
         limit: limit,
         skip: skip,
@@ -32,7 +59,10 @@ class ProductRepositoryImpl implements ProductRepository {
     } on DioException catch (e) {
       return Left(_handleDioError(e));
     } catch (e) {
-      return Left(UnknownFailure(e.toString()));
+      if (e is DioException && e.type == DioExceptionType.connectionTimeout) {
+        return const Left(NetworkFailure('Connection timeout'));
+      }
+      return const Left(NetworkFailure('An unexpected error occurred'));
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:task/core/localization/app_localizations.dart';
 import 'package:task/features/main/presentation/main_screen.dart';
 import 'package:task/features/products/presentation/product_details_screen.dart';
 import 'package:task/features/recipes/presentation/recipe_details_screen.dart';
@@ -83,19 +84,20 @@ final appRouterProvider = Provider<GoRouter>(
             ),
             const SizedBox(height: 16),
             Text(
-              'Page Not Found',
+              AppLocalizations.of(context)?.error ?? 'Page Not Found',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
             Text(
-              'The page you are looking for does not exist.',
+              AppLocalizations.of(context)?.noData ??
+                  'The page you are looking for does not exist.',
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => context.go('/home'),
-              child: const Text('Go Home'),
+              child: Text(AppLocalizations.of(context)?.goHome ?? 'Go Home'),
             ),
           ],
         ),

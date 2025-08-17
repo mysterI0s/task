@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:task/core/localization/app_localizations.dart';
 
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/providers/theme_provider.dart';
@@ -13,20 +14,24 @@ class SettingsScreen extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings'), elevation: 0),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)?.settings ?? 'Settings'),
+        elevation: 0,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           // Theme Section
           _buildSection(
             context,
-            title: 'Appearance',
+            title: AppLocalizations.of(context)?.theme ?? 'Appearance',
             icon: Icons.palette_outlined,
             children: [
               _buildThemeOption(
                 context,
                 ref,
-                title: 'Light Theme',
+                title:
+                    AppLocalizations.of(context)?.lightTheme ?? 'Light Theme',
                 subtitle: 'Use light colors',
                 value: AppThemeMode.light,
                 groupValue: appThemeMode,
@@ -35,7 +40,7 @@ class SettingsScreen extends ConsumerWidget {
               _buildThemeOption(
                 context,
                 ref,
-                title: 'Dark Theme',
+                title: AppLocalizations.of(context)?.darkTheme ?? 'Dark Theme',
                 subtitle: 'Use dark colors',
                 value: AppThemeMode.dark,
                 groupValue: appThemeMode,
@@ -44,7 +49,8 @@ class SettingsScreen extends ConsumerWidget {
               _buildThemeOption(
                 context,
                 ref,
-                title: 'System Theme',
+                title:
+                    AppLocalizations.of(context)?.systemTheme ?? 'System Theme',
                 subtitle: 'Follow system settings',
                 value: AppThemeMode.system,
                 groupValue: appThemeMode,
@@ -58,13 +64,13 @@ class SettingsScreen extends ConsumerWidget {
           // Language Section
           _buildSection(
             context,
-            title: 'Language',
+            title: AppLocalizations.of(context)?.language ?? 'Language',
             icon: Icons.language_outlined,
             children: [
               _buildLanguageOption(
                 context,
                 ref,
-                title: 'English',
+                title: AppLocalizations.of(context)?.english ?? 'English',
                 subtitle: 'English (US)',
                 value: const Locale('en', 'US'),
                 groupValue: locale,
@@ -73,7 +79,7 @@ class SettingsScreen extends ConsumerWidget {
               _buildLanguageOption(
                 context,
                 ref,
-                title: 'العربية',
+                title: AppLocalizations.of(context)?.arabic ?? 'العربية',
                 subtitle: 'Arabic (Saudi Arabia)',
                 value: const Locale('ar', 'SA'),
                 groupValue: locale,
@@ -87,7 +93,7 @@ class SettingsScreen extends ConsumerWidget {
           // About Section
           _buildSection(
             context,
-            title: 'About',
+            title: AppLocalizations.of(context)?.about ?? 'About',
             icon: Icons.info_outline,
             children: [
               ListTile(
@@ -100,8 +106,12 @@ class SettingsScreen extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
-                title: const Text('Data Explorer'),
-                subtitle: const Text('Version 1.0.0'),
+                title: Text(
+                  AppLocalizations.of(context)?.appTitle ?? 'Data Explorer',
+                ),
+                subtitle: Text(
+                  '${AppLocalizations.of(context)?.version ?? 'Version'} 1.0.0',
+                ),
                 trailing: Icon(
                   Icons.chevron_right_rounded,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -118,8 +128,14 @@ class SettingsScreen extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onSecondaryContainer,
                   ),
                 ),
-                title: const Text('Privacy Policy'),
-                subtitle: const Text('How we protect your data'),
+                title: Text(
+                  AppLocalizations.of(context)?.privacyPolicyTitle ??
+                      'Privacy Policy',
+                ),
+                subtitle: Text(
+                  AppLocalizations.of(context)?.howWeProtectData ??
+                      'How we protect your data',
+                ),
                 trailing: Icon(
                   Icons.chevron_right_rounded,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -136,8 +152,14 @@ class SettingsScreen extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onTertiaryContainer,
                   ),
                 ),
-                title: const Text('Terms of Service'),
-                subtitle: const Text('Terms and conditions'),
+                title: Text(
+                  AppLocalizations.of(context)?.termsOfServiceTitle ??
+                      'Terms of Service',
+                ),
+                subtitle: Text(
+                  AppLocalizations.of(context)?.termsAndConditions ??
+                      'Terms and conditions',
+                ),
                 trailing: Icon(
                   Icons.chevron_right_rounded,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -152,7 +174,7 @@ class SettingsScreen extends ConsumerWidget {
           // Support Section
           _buildSection(
             context,
-            title: 'Support',
+            title: AppLocalizations.of(context)?.support ?? 'Support',
             icon: Icons.support_outlined,
             children: [
               ListTile(
@@ -165,8 +187,14 @@ class SettingsScreen extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
-                title: const Text('Send Feedback'),
-                subtitle: const Text('Help us improve the app'),
+                title: Text(
+                  AppLocalizations.of(context)?.sendFeedbackTitle ??
+                      'Send Feedback',
+                ),
+                subtitle: Text(
+                  AppLocalizations.of(context)?.helpUsImprove ??
+                      'Help us improve the app',
+                ),
                 trailing: Icon(
                   Icons.chevron_right_rounded,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -183,8 +211,13 @@ class SettingsScreen extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onSecondaryContainer,
                   ),
                 ),
-                title: const Text('Rate App'),
-                subtitle: const Text('Rate us on the app store'),
+                title: Text(
+                  AppLocalizations.of(context)?.rateApp ?? 'Rate App',
+                ),
+                subtitle: Text(
+                  AppLocalizations.of(context)?.rateUsOnAppStore ??
+                      'Rate us on the app store',
+                ),
                 trailing: Icon(
                   Icons.chevron_right_rounded,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -316,7 +349,8 @@ class SettingsScreen extends ConsumerWidget {
   void _showAboutDialog(BuildContext context) {
     showAboutDialog(
       context: context,
-      applicationName: 'Data Explorer',
+      applicationName:
+          AppLocalizations.of(context)?.appTitle ?? 'Data Explorer',
       applicationVersion: '1.0.0',
       applicationIcon: Container(
         width: 64,
@@ -332,9 +366,10 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
       children: [
-        const Text(
-          'A modern Flutter application for exploring and discovering data from various sources. '
-          'Built with clean architecture, Material 3 design, and best practices.',
+        Text(
+          AppLocalizations.of(context)?.appDescription ??
+              'A modern Flutter application for exploring and discovering data from various sources. '
+                  'Built with clean architecture, Material 3 design, and best practices.',
         ),
       ],
     );
@@ -344,18 +379,21 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Privacy Policy'),
-        content: const SingleChildScrollView(
+        title: Text(
+          AppLocalizations.of(context)?.privacyPolicyTitle ?? 'Privacy Policy',
+        ),
+        content: SingleChildScrollView(
           child: Text(
-            'This app respects your privacy. We do not collect, store, or share any personal information. '
-            'All data displayed in the app is fetched from public APIs and is not stored on our servers.\n\n'
-            'The app may store user preferences locally on your device for a better user experience.',
+            AppLocalizations.of(context)?.privacyPolicyContent ??
+                'This app respects your privacy. We do not collect, store, or share any personal information. '
+                    'All data displayed in the app is fetched from public APIs and is not stored on our servers.\n\n'
+                    'The app may store user preferences locally on your device for a better user experience.',
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: Text(AppLocalizations.of(context)?.close ?? 'Close'),
           ),
         ],
       ),
@@ -366,20 +404,24 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Terms of Service'),
-        content: const SingleChildScrollView(
+        title: Text(
+          AppLocalizations.of(context)?.termsOfServiceTitle ??
+              'Terms of Service',
+        ),
+        content: SingleChildScrollView(
           child: Text(
-            'By using this app, you agree to the following terms:\n\n'
-            '1. This app is provided "as is" without any warranties.\n'
-            '2. The data displayed is fetched from third-party APIs and we are not responsible for its accuracy.\n'
-            '3. Use this app responsibly and in accordance with applicable laws.\n'
-            '4. We reserve the right to update these terms at any time.',
+            AppLocalizations.of(context)?.termsOfServiceContent ??
+                'By using this app, you agree to the following terms:\n\n'
+                    '1. This app is provided "as is" without any warranties.\n'
+                    '2. The data displayed is fetched from third-party APIs and we are not responsible for its accuracy.\n'
+                    '3. Use this app responsibly and in accordance with applicable laws.\n'
+                    '4. We reserve the right to update these terms at any time.',
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: Text(AppLocalizations.of(context)?.close ?? 'Close'),
           ),
         ],
       ),
@@ -392,20 +434,25 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Send Feedback'),
+        title: Text(
+          AppLocalizations.of(context)?.sendFeedbackTitle ?? 'Send Feedback',
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'We value your feedback! Let us know how we can improve.',
+            Text(
+              AppLocalizations.of(context)?.sendFeedbackContent ??
+                  'We value your feedback! Let us know how we can improve.',
             ),
             const SizedBox(height: 16),
             TextField(
               controller: controller,
               maxLines: 4,
-              decoration: const InputDecoration(
-                hintText: 'Enter your feedback here...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText:
+                    AppLocalizations.of(context)?.enterFeedbackHint ??
+                    'Enter your feedback here...',
+                border: const OutlineInputBorder(),
               ),
             ),
           ],
@@ -413,16 +460,21 @@ class SettingsScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Thank you for your feedback!')),
+                SnackBar(
+                  content: Text(
+                    AppLocalizations.of(context)?.thankYouFeedback ??
+                        'Thank you for your feedback!',
+                  ),
+                ),
               );
             },
-            child: const Text('Send'),
+            child: Text(AppLocalizations.of(context)?.send ?? 'Send'),
           ),
         ],
       ),
@@ -433,13 +485,18 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Rate Data Explorer'),
-        content: const Column(
+        title: Text(
+          AppLocalizations.of(context)?.rateAppTitle ?? 'Rate Data Explorer',
+        ),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Enjoying the app? Please consider rating us!'),
-            SizedBox(height: 16),
-            Row(
+            Text(
+              AppLocalizations.of(context)?.rateAppContent ??
+                  'Enjoying the app? Please consider rating us!',
+            ),
+            const SizedBox(height: 16),
+            const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.star, color: Colors.amber, size: 32),
@@ -454,18 +511,23 @@ class SettingsScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Maybe Later'),
+            child: Text(
+              AppLocalizations.of(context)?.maybeLater ?? 'Maybe Later',
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Thank you! Redirecting to app store...'),
+                SnackBar(
+                  content: Text(
+                    AppLocalizations.of(context)?.thankYouRateApp ??
+                        'Thank you! Redirecting to app store...',
+                  ),
                 ),
               );
             },
-            child: const Text('Rate Now'),
+            child: Text(AppLocalizations.of(context)?.rateNow ?? 'Rate Now'),
           ),
         ],
       ),

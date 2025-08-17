@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:task/core/localization/app_localizations.dart';
 import 'package:task/core/widgets/error_widget.dart';
 import 'package:task/core/widgets/loading_widget.dart';
 import 'package:task/features/products/application/providers/product_provider.dart';
@@ -42,8 +43,10 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen>
     return Scaffold(
       body: productAsync.when(
         data: _buildProductDetails,
-        loading: () =>
-            const LoadingWidget(message: 'Loading product details...'),
+        loading: () => LoadingWidget(
+          message:
+              '${AppLocalizations.of(context)?.loading ?? 'Loading'} ${AppLocalizations.of(context)?.details.toLowerCase() ?? 'product details'}...',
+        ),
         error: (error, stack) => AppErrorWidget(
           message: error.toString(),
           onRetry: () => ref.refresh(productProvider(widget.productId)),
@@ -93,7 +96,9 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen>
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          product.brand ?? 'Unknown Brand',
+                          product.brand ??
+                              AppLocalizations.of(context)?.unknownBrand ??
+                              'Unknown Brand',
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
                                 color: Theme.of(context).colorScheme.primary,
@@ -257,10 +262,14 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen>
                 context,
               ).colorScheme.onSurfaceVariant,
               indicatorColor: Theme.of(context).colorScheme.primary,
-              tabs: const [
-                Tab(text: 'Description'),
-                Tab(text: 'Details'),
-                Tab(text: 'Reviews'),
+              tabs: [
+                Tab(
+                  text:
+                      AppLocalizations.of(context)?.description ??
+                      'Description',
+                ),
+                Tab(text: AppLocalizations.of(context)?.details ?? 'Details'),
+                Tab(text: AppLocalizations.of(context)?.reviews ?? 'Reviews'),
               ],
             ),
           ),
@@ -355,9 +364,15 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen>
     padding: const EdgeInsets.all(16),
     child: Column(
       children: [
-        _buildDetailItem('Category', product.category),
+        _buildDetailItem(
+          AppLocalizations.of(context)?.category ?? 'Category',
+          product.category,
+        ),
         _buildDetailItem('SKU', product.sku ?? 'N/A'),
-        _buildDetailItem('Weight', '${product.weight ?? 0}g'),
+        _buildDetailItem(
+          AppLocalizations.of(context)?.stock ?? 'Weight',
+          '${product.weight ?? 0}g',
+        ),
         if (product.dimensions != null)
           _buildDetailItem(
             'Dimensions',
@@ -365,12 +380,18 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen>
           ),
         _buildDetailItem('Warranty', product.warrantyInformation ?? 'N/A'),
         _buildDetailItem('Shipping', product.shippingInformation ?? 'N/A'),
-        _buildDetailItem('Return Policy', product.returnPolicy ?? 'N/A'),
         _buildDetailItem(
-          'Minimum Order',
-          '${product.minimumOrderQuantity ?? 1} units',
+          AppLocalizations.of(context)?.returnPolicy ?? 'Return Policy',
+          product.returnPolicy ?? 'N/A',
         ),
-        _buildDetailItem('Availability', product.availabilityStatus ?? 'N/A'),
+        _buildDetailItem(
+          AppLocalizations.of(context)?.minimumOrder ?? 'Minimum Order',
+          '${product.minimumOrderQuantity ?? 1} ${AppLocalizations.of(context)?.units ?? 'units'}',
+        ),
+        _buildDetailItem(
+          AppLocalizations.of(context)?.inStock ?? 'Availability',
+          product.availabilityStatus ?? 'N/A',
+        ),
       ],
     ),
   );
@@ -399,7 +420,11 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen>
 
   Widget _buildReviewsTab(Product product) {
     if (product.reviews?.isEmpty != false) {
-      return const Center(child: Text('No reviews available'));
+      return Center(
+        child: Text(
+          AppLocalizations.of(context)?.noData ?? 'No reviews available',
+        ),
+      );
     }
 
     return ListView.separated(

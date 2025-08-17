@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task/core/localization/app_localizations.dart';
 
 class RecipeSearchBar extends StatefulWidget {
   const RecipeSearchBar({super.key, required this.onSearch, this.initialQuery});
@@ -64,7 +65,8 @@ class _RecipeSearchBarState extends State<RecipeSearchBar> {
       onSubmitted: (_) => _performSearch(),
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        hintText: 'Search recipes by name or ingredient...',
+        hintText:
+            '${AppLocalizations.of(context)?.search ?? 'Search'} ${AppLocalizations.of(context)?.recipes.toLowerCase() ?? 'recipes'} ${AppLocalizations.of(context)?.search ?? 'by name or ingredient'}...',
         border: InputBorder.none,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,

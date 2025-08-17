@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:task/core/localization/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -101,7 +102,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Column(
                 children: [
                   Text(
-                    'Data Explorer',
+                    AppLocalizations.of(context)?.appTitle ?? 'Data Explorer',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -111,7 +112,9 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Discover • Explore • Analyze',
+                    AppLocalizations.of(context)?.locale.languageCode == 'ar'
+                        ? 'اكتشف • استكشف • حلل'
+                        : 'Discover • Explore • Analyze',
                     style: TextStyle(
                       fontSize: 16,
                       color: Theme.of(
