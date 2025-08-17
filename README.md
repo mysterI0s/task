@@ -150,9 +150,6 @@ Key configuration options in `lib/core/config/app_config.dart`:
 ## 📱 Platform Support
 
 - **Android**: API level 21+ (Android 5.0+)
-- **iOS**: iOS 12.0+
-- **Web**: Modern browsers (Chrome, Firefox, Safari, Edge)
-- **Desktop**: Windows, macOS, Linux (Flutter desktop support)
 
 ## 🧪 Testing
 
@@ -172,16 +169,6 @@ flutter test
 ```bash
 flutter build apk --release
 flutter build appbundle --release
-```
-
-### iOS
-```bash
-flutter build ios --release
-```
-
-### Web
-```bash
-flutter build web --release
 ```
 
 ## 🔍 Troubleshooting
