@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:task/core/localization/app_localizations.dart';
 import 'package:task/core/providers/locale_provider.dart';
 import 'package:task/core/providers/theme_provider.dart';
+import 'package:task/core/storage/local_storage_service.dart';
 
 import 'core/config/app_config.dart';
 import 'core/router/app_router.dart';
@@ -19,6 +20,9 @@ void main() async {
 
   // Initialize app storage
   await AppConfig.init();
+
+  // Initialize local storage service
+  await LocalStorageService.init();
 
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(

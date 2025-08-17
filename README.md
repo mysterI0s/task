@@ -8,27 +8,30 @@ A modern, feature-rich Flutter application built with clean architecture princip
 - **Multi-language Support**: English and Arabic localization
 - **Dynamic Theme System**: Light/Dark themes with Material 3 dynamic colors
 - **Responsive Design**: Optimized for various screen sizes
-- **Offline Support**: Local data caching with Hive database
+- **Offline Support**: Comprehensive offline-first architecture with local data caching
 - **Pull-to-Refresh**: Swipe down to refresh data
 - **Infinite Scrolling**: Pagination for large datasets
 
 ### Product Management
 - **Product Catalog**: Browse products with detailed information
-- **Advanced Search**: Real-time search functionality
+- **Advanced Search**: Real-time search functionality with history
 - **Category Filtering**: Filter products by category
 - **Sorting Options**: Sort by name, price, rating, etc.
 - **Product Details**: Comprehensive product information view
+- **Offline Access**: Cached products available without internet
 
 ### Recipe Management
 - **Recipe Collection**: Browse and search recipes
 - **Recipe Details**: Step-by-step instructions and ingredients
 - **Recipe Search**: Find recipes by ingredients or name
-- **Settings Management**: User preferences and app configuration
+- **Offline Access**: Cached recipes available without internet
+- **Settings Management**: User preferences, app configuration, and cache management
 
 ### Technical Features
 - **Clean Architecture**: Domain-driven design with clear separation of concerns
 - **State Management**: Riverpod for reactive state management
 - **API Integration**: RESTful API integration with Dio HTTP client
+- **Offline Architecture**: Offline-first approach with intelligent caching and fallback mechanisms
 - **Code Generation**: Freezed, JSON serialization, and Retrofit
 - **Error Handling**: Comprehensive error handling and user feedback
 - **Performance**: Optimized with lazy loading and efficient data structures
@@ -96,11 +99,11 @@ lib/
 The app includes the following main screens:
 - **Splash Screen**: App initialization and branding
 - **Main Screen**: Navigation hub
-- **Products Screen**: Product catalog with search and filters
+- **Products Screen**: Product catalog with search, filters, and offline indicator
 - **Product Details**: Detailed product information
 - **Recipes Screen**: Recipe collection
 - **Recipe Details**: Recipe instructions and ingredients
-- **Settings Screen**: App configuration and preferences
+- **Settings Screen**: App configuration, preferences, and cache management
 
 ## 🚀 Getting Started
 
@@ -147,6 +150,12 @@ Key configuration options in `lib/core/config/app_config.dart`:
 - **Cache**: Expiration duration and storage keys
 - **Storage**: Theme, locale, and onboarding preferences
 
+### Offline Configuration
+Offline functionality is configured in `lib/core/config/app_config.dart`:
+- **Cache Expiration**: Default 1 hour (configurable)
+- **Storage Keys**: Centralized storage management
+- **Fallback Strategy**: Automatic fallback to cached data
+
 ## 📱 Platform Support
 
 - **Android**: API level 21+ (Android 5.0+)
@@ -157,11 +166,19 @@ The project includes comprehensive testing setup:
 - **Unit Tests**: Business logic and utilities
 - **Widget Tests**: UI component testing
 - **Integration Tests**: End-to-end functionality
+- **Offline Testing**: Test cache functionality and offline behavior
 
 Run tests with:
 ```bash
 flutter test
 ```
+
+### Testing Offline Features
+
+1. **Enable Airplane Mode** to test offline data access
+2. **Check Offline Indicator** for cache status
+3. **Test Cache Management** in Settings screen
+4. **Verify Data Persistence** after app restart
 
 ## 📦 Building for Production
 

@@ -173,6 +173,78 @@ class AppLocalizations {
   String get sortBy => locale.languageCode == 'ar' ? 'ترتيب حسب' : 'Sort By';
   String get connectionTimeout =>
       locale.languageCode == 'ar' ? 'انتهت مهلة الاتصال' : 'Connection timeout';
+
+  // Offline and Cache Management
+  String get offlineDataAvailable => locale.languageCode == 'ar'
+      ? 'البيانات متوفرة بدون إنترنت'
+      : 'Offline Data Available';
+  String get offlineDataExpired => locale.languageCode == 'ar'
+      ? 'البيانات قد تكون قديمة'
+      : 'Offline Data Expired';
+  String get offlineDataStatus => locale.languageCode == 'ar'
+      ? 'حالة البيانات بدون إنترنت'
+      : 'Offline Data Status';
+  String get dataIsFresh =>
+      locale.languageCode == 'ar' ? 'البيانات حديثة' : 'Data is fresh';
+  String get dataMayBeOutdated => locale.languageCode == 'ar'
+      ? 'البيانات قد تكون قديمة'
+      : 'Data may be outdated';
+  String get cacheAndOfflineData => locale.languageCode == 'ar'
+      ? 'التخزين المؤقت والبيانات بدون إنترنت'
+      : 'Cache & Offline Data';
+  String get clearCache =>
+      locale.languageCode == 'ar' ? 'مسح التخزين المؤقت' : 'Clear Cache';
+  String get removeAllCachedData => locale.languageCode == 'ar'
+      ? 'إزالة جميع البيانات المخزنة مؤقتاً'
+      : 'Remove all cached data';
+  String get clearSearchHistory =>
+      locale.languageCode == 'ar' ? 'مسح سجل البحث' : 'Clear Search History';
+  String get removeSearchQueries => locale.languageCode == 'ar'
+      ? 'إزالة استعلامات البحث'
+      : 'Remove search queries';
+  String get pullToRefreshToGetLatestData => locale.languageCode == 'ar'
+      ? 'اسحب للتحديث للحصول على أحدث البيانات'
+      : 'Pull to refresh to get latest data';
+  String get cacheClearedSuccessfully => locale.languageCode == 'ar'
+      ? 'تم مسح التخزين المؤقت بنجاح'
+      : 'Cache cleared successfully';
+  String get searchHistoryCleared => locale.languageCode == 'ar'
+      ? 'تم مسح سجل البحث'
+      : 'Search history cleared';
+  String get thisWillRemoveAllCachedData => locale.languageCode == 'ar'
+      ? 'سيؤدي هذا إلى إزالة جميع البيانات المخزنة مؤقتاً بما في ذلك المنتجات والوصفات والفئات. ستحتاج التطبيق إلى تنزيل البيانات مرة أخرى عند الاستخدام التالي.'
+      : 'This will remove all cached data including products, recipes, and categories. The app will need to download data again on next use.';
+  String get thisWillRemoveAllYourPreviousSearchQueries =>
+      locale.languageCode == 'ar'
+      ? 'سيؤدي هذا إلى إزالة جميع استعلامات البحث السابقة. لا يمكن التراجع عن هذا الإجراء.'
+      : 'This will remove all your previous search queries. This action cannot be undone.';
+  String get thisDataIsCachedLocallyAndAvailableOffline =>
+      locale.languageCode == 'ar'
+      ? 'هذه البيانات مخزنة محلياً ومتوفرة بدون إنترنت. اسحب للتحديث للحصول على أحدث المعلومات.'
+      : 'This data is cached locally and available offline. Pull to refresh to get the latest information.';
+  String get offlineDataSummary => locale.languageCode == 'ar'
+      ? 'ملخص البيانات بدون إنترنت'
+      : 'Offline Data Summary';
+  String get productsCached =>
+      locale.languageCode == 'ar' ? 'منتج مخزن مؤقتاً' : 'products cached';
+  String get recipesCached =>
+      locale.languageCode == 'ar' ? 'وصفة مخزنة مؤقتاً' : 'recipes cached';
+  String get categoriesCached =>
+      locale.languageCode == 'ar' ? 'فئة مخزنة مؤقتاً' : 'categories cached';
+  String get searchHistoryEntries => locale.languageCode == 'ar'
+      ? 'إدخال في سجل البحث'
+      : 'search history entries';
+  String get favoritesTotal =>
+      locale.languageCode == 'ar' ? 'إجمالي المفضلة' : 'favorites total';
+  String get lastUpdated =>
+      locale.languageCode == 'ar' ? 'آخر تحديث' : 'Last Updated';
+  String get cacheStatus =>
+      locale.languageCode == 'ar' ? 'حالة التخزين المؤقت' : 'Cache Status';
+  String get valid => locale.languageCode == 'ar' ? 'صالح' : 'Valid';
+  String get expired =>
+      locale.languageCode == 'ar' ? 'منتهي الصلاحية' : 'Expired';
+  String get offline => locale.languageCode == 'ar' ? 'بدون إنترنت' : 'Offline';
+  String get ago => locale.languageCode == 'ar' ? 'منذ' : 'ago';
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

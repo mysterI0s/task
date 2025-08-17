@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task/core/localization/app_localizations.dart';
+import 'package:task/core/storage/cache_manager.dart';
 
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/providers/theme_provider.dart';
@@ -84,6 +85,93 @@ class SettingsScreen extends ConsumerWidget {
                 value: const Locale('ar', 'SA'),
                 groupValue: locale,
                 flag: '🇸🇦',
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          // Cache Management Section
+          _buildSection(
+            context,
+            title:
+                AppLocalizations.of(context)?.cacheAndOfflineData ??
+                'Cache & Offline Data',
+            icon: Icons.storage_outlined,
+            children: [
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer,
+                  child: Icon(
+                    Icons.cloud_done_outlined,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
+                ),
+                title: Text(
+                  AppLocalizations.of(context)?.offlineDataStatus ??
+                      'Offline Data Status',
+                ),
+                subtitle: Text(
+                  CacheManager.isCacheValid()
+                      ? AppLocalizations.of(context)?.dataIsFresh ??
+                            'Data is fresh'
+                      : AppLocalizations.of(context)?.dataMayBeOutdated ??
+                            'Data may be outdated',
+                ),
+                trailing: Icon(
+                  Icons.chevron_right_rounded,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                onTap: () => _showOfflineDataDialog(context),
+              ),
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.secondaryContainer,
+                  child: Icon(
+                    Icons.refresh_outlined,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
+                ),
+                title: Text(
+                  AppLocalizations.of(context)?.clearCache ?? 'Clear Cache',
+                ),
+                subtitle: Text(
+                  AppLocalizations.of(context)?.removeAllCachedData ??
+                      'Remove all cached data',
+                ),
+                trailing: Icon(
+                  Icons.chevron_right_rounded,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                onTap: () => _showClearCacheDialog(context),
+              ),
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.tertiaryContainer,
+                  child: Icon(
+                    Icons.history_outlined,
+                    color: Theme.of(context).colorScheme.onTertiaryContainer,
+                  ),
+                ),
+                title: Text(
+                  AppLocalizations.of(context)?.clearSearchHistory ??
+                      'Clear Search History',
+                ),
+                subtitle: Text(
+                  AppLocalizations.of(context)?.removeSearchQueries ??
+                      'Remove search queries',
+                ),
+                trailing: Icon(
+                  Icons.chevron_right_rounded,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                onTap: () => _showClearSearchHistoryDialog(context),
               ),
             ],
           ),
@@ -528,6 +616,131 @@ class SettingsScreen extends ConsumerWidget {
               );
             },
             child: Text(AppLocalizations.of(context)?.rateNow ?? 'Rate Now'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showOfflineDataDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          AppLocalizations.of(context)?.offlineDataStatus ??
+              'Offline Data Status',
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(CacheManager.getOfflineDataSummary()),
+              const SizedBox(height: 16),
+              Text(
+                AppLocalizations.of(
+                      context,
+                    )?.thisDataIsCachedLocallyAndAvailableOffline ??
+                    'This data is cached locally and available offline. Pull to refresh to get the latest information.',
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(AppLocalizations.of(context)?.close ?? 'Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showClearCacheDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)?.clearCache ?? 'Clear Cache'),
+        content: Text(
+          AppLocalizations.of(context)?.thisWillRemoveAllCachedData ??
+              'This will remove all cached data including products, recipes, and categories. The app will need to download data again on next use.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await CacheManager.clearAllCache();
+              if (context.mounted) {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context)?.cacheClearedSuccessfully ??
+                          'Cache cleared successfully',
+                    ),
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(
+              AppLocalizations.of(context)?.clearCache ?? 'Clear Cache',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showClearSearchHistoryDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          AppLocalizations.of(context)?.clearSearchHistory ??
+              'Clear Search History',
+        ),
+        content: Text(
+          AppLocalizations.of(
+                context,
+              )?.thisWillRemoveAllYourPreviousSearchQueries ??
+              'This will remove all your previous search queries. This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await CacheManager.clearSearchHistory();
+              if (context.mounted) {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context)?.searchHistoryCleared ??
+                          'Search history cleared',
+                    ),
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(
+              AppLocalizations.of(context)?.clearSearchHistory ??
+                  'Clear History',
+            ),
           ),
         ],
       ),

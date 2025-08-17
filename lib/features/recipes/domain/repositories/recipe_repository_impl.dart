@@ -2,6 +2,7 @@
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:task/core/storage/local_storage_service.dart';
 import 'package:task/features/recipes/data/api/recipe_api_service.dart';
 
 import '../../../../core/error/failures.dart';
@@ -19,9 +20,64 @@ class RecipeRepositoryImpl implements RecipeRepository {
     String? search,
   }) async {
     try {
+      // Try to get cached data first if no search is applied
+      if (search == null && LocalStorageService.isCacheValid()) {
+        final cachedRecipes = LocalStorageService.getCachedRecipes();
+        if (cachedRecipes.isNotEmpty) {
+          // Apply pagination to cached data
+          final startIndex = skip;
+          final paginatedRecipes = cachedRecipes
+              .skip(startIndex)
+              .take(limit)
+              .toList();
+
+          if (paginatedRecipes.isNotEmpty) {
+            return Right(
+              RecipesResponse(
+                recipes: paginatedRecipes,
+                total: cachedRecipes.length,
+                skip: skip,
+                limit: limit,
+              ),
+            );
+          }
+        }
+      }
+
+      // If no cached data or cache is invalid, fetch from API
       final response = await _apiService.getRecipes(limit: limit, skip: skip);
+
+      // Cache the response if it's a general recipes request (not search)
+      if (search == null) {
+        await LocalStorageService.cacheRecipes(response.recipes);
+      }
+
       return Right(response);
     } on DioException catch (e) {
+      // If API call fails, try to return cached data
+      if (search == null) {
+        final cachedRecipes = LocalStorageService.getCachedRecipes();
+        if (cachedRecipes.isNotEmpty) {
+          // Apply pagination to cached data
+          final startIndex = skip;
+          final paginatedRecipes = cachedRecipes
+              .skip(startIndex)
+              .take(limit)
+              .toList();
+
+          if (paginatedRecipes.isNotEmpty) {
+            return Right(
+              RecipesResponse(
+                recipes: paginatedRecipes,
+                total: cachedRecipes.length,
+                skip: skip,
+                limit: limit,
+              ),
+            );
+          }
+        }
+      }
+
       return Left(_handleDioError(e));
     } catch (e) {
       if (e is DioException && e.type == DioExceptionType.connectionTimeout) {
@@ -34,9 +90,26 @@ class RecipeRepositoryImpl implements RecipeRepository {
   @override
   Future<Either<Failure, Recipe>> getRecipe(int id) async {
     try {
+      // Try to get from cache first
+      final cachedRecipe = LocalStorageService.getCachedRecipe(id);
+      if (cachedRecipe != null) {
+        return Right(cachedRecipe);
+      }
+
+      // If not in cache, fetch from API
       final recipe = await _apiService.getRecipe(id);
+
+      // Cache the recipe
+      await LocalStorageService.cacheRecipe(recipe);
+
       return Right(recipe);
     } on DioException catch (e) {
+      // If API call fails, try to return cached data
+      final cachedRecipe = LocalStorageService.getCachedRecipe(id);
+      if (cachedRecipe != null) {
+        return Right(cachedRecipe);
+      }
+
       return Left(_handleDioError(e));
     } catch (e) {
       return Left(UnknownFailure(e.toString()));

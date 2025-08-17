@@ -5,6 +5,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:task/core/localization/app_localizations.dart';
 import 'package:task/core/widgets/error_widget.dart';
 import 'package:task/core/widgets/loading_widget.dart';
+import 'package:task/core/widgets/offline_indicator.dart';
 import 'package:task/features/products/application/providers/product_provider.dart';
 import 'package:task/features/products/presentation/widgets/product_card.dart';
 import 'package:task/features/products/presentation/widgets/product_filters.dart';
@@ -70,6 +71,9 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
       ),
       body: Column(
         children: [
+          // Offline Indicator
+          const OfflineIndicator(),
+
           // Search Bar
           Padding(
             padding: const EdgeInsets.all(16),
@@ -165,7 +169,8 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Center(
                   child: Text(
-                    AppLocalizations.of(context)?.loadMore ?? 'No more products to load',
+                    AppLocalizations.of(context)?.loadMore ??
+                        'No more products to load',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
