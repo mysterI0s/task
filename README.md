@@ -117,7 +117,7 @@ The app includes the following main screens:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/mysterI0s/task
+   git clone https://github.com/mysterI0s/Data-Explorer
    cd task
    ```
 
